@@ -195,7 +195,7 @@ listView journal =
                 ]
     in
         div []
-            [ button [ class "button-primary", onClick NewEntry ] [ text "New" ]
+            [ button [ class "button-primary", onClick NewEntry ] [ text "New Entry" ]
             , ul [ class "journal" ]
                 (Array.indexedMap entrySummary journal
                     |> Array.toList
