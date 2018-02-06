@@ -40,8 +40,6 @@ type alias Model =
     { journal : Journal
     , viewState : ViewState
     }
-
-
 type ViewState
     = Listing
     | Viewing Int
@@ -69,6 +67,7 @@ type Msg
     | ListEntries
     | NewEntry
     | UpdateEntryTitle String
+    | UpdateEntryDate String
     | UpdateEntryContent String
     | SaveEntry
     | JournalUpdated Journal
@@ -93,7 +92,7 @@ update msg model =
                     ( { model | viewState = NotFound }, Cmd.none )
 
         NewEntry ->
-            ( { model | viewState = Creating (Entry "" "") }, Cmd.none )
+            ( { model | viewState = Creating (Entry "" "" "") }, Cmd.none )
 
         SaveEntry ->
             case model.viewState of
@@ -112,7 +111,12 @@ update msg model =
                     updateEditingState model.viewState (Journal.updateTitle newTitle)
             in
                 ( { model | viewState = newViewState }, Cmd.none )
-
+        UpdateEntryDate newDate ->
+                        let
+                            newViewState =
+                                updateEditingState model.viewState (Journal.updateDate newDate)
+                        in
+                            ( { model | viewState = newViewState }, Cmd.none )
         UpdateEntryContent newContent ->
             let
                 newViewState =
@@ -211,6 +215,9 @@ entryEditor onSave onCancel entry =
                 [ div [ class "title" ]
                     [ input [ onInput (UpdateEntryTitle), value entry.title ] []
                     ]
+                , div [ class "date" ]
+                    [ input [ onInput (UpdateEntryDate), value entry.date ] []
+                    ]
                 , div [ class "content" ]
                     [ textarea [ onInput (UpdateEntryContent), value entry.content ] []
                     ]
@@ -246,6 +253,8 @@ entryDisplay : Entry -> Html Msg
 entryDisplay entry =
     div [ class "entry" ]
         [ h1 [ class "title" ] [ text entry.title ]
+        , div [ class "date" ]
+            [ Markdown.toHtml [] entry.date ]
         , div [ class "content" ]
             [ Markdown.toHtml [] entry.content ]
         ]

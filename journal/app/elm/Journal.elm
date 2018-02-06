@@ -6,6 +6,7 @@ module Journal
         , addEntry
         , Entry
         , updateTitle
+        , updateDate
         , updateContent
         , encode
         , decoder
@@ -47,6 +48,7 @@ addEntry entry journal =
 
 type alias Entry =
     { title : String
+    , date : String
     , content : String
     }
 
@@ -60,6 +62,9 @@ updateContent : String -> Entry -> Entry
 updateContent newContent entry =
     { entry | content = newContent }
 
+updateDate : String -> Entry -> Entry
+updateDate newDate entry =
+        { entry | date = newDate }
 
 
 -- Encoding/Decoding
@@ -87,6 +92,7 @@ encodeEntry entry =
 
 decodeEntry : Decoder Entry
 decodeEntry =
-    Decode.map2 Entry
+    Decode.map3 Entry
         (Decode.field "title" Decode.string)
+        (Decode.field "date"  Decode.string)
         (Decode.field "content" Decode.string)
