@@ -86,6 +86,7 @@ encodeEntry : Entry -> Encode.Value
 encodeEntry entry =
     object
         [ ( "title", Encode.string entry.title )
+        , ( "date",  Encode.string entry.date )
         , ( "content", Encode.string entry.content )
         ]
 
