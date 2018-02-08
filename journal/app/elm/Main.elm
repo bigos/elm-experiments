@@ -12,6 +12,7 @@ import Html
         , a
         , ul
         , li
+        , span
         , button
         )
 import Html.Attributes exposing (class, value, href)
@@ -195,8 +196,9 @@ listView journal =
     let
         entrySummary idx entry =
             li [ class "entry-summary" ]
-                [ a [ class "title", onClick (ShowEntry idx), href "#" ] [ text entry.title ]
-                ]
+            [ a [ class "title", onClick (ShowEntry idx), href "#" ] [ text entry.title ]
+            , span [] [text (" - " ++ entry.date)]
+            ]
     in
         div []
             [ button [ class "button-primary", onClick NewEntry ] [ text "New Entry" ]
