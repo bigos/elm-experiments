@@ -55,7 +55,7 @@ init : ( Model, Cmd Msg )
 init =
     ( { journal = Journal.empty
       , viewState = Listing
-      , search = ""
+      , search = "03"
       }
     , Ports.loadJournal
     )
@@ -179,7 +179,7 @@ view : Model -> Html Msg
 view model =
     case model.viewState of
         Listing ->
-            listView model.journal
+            listView model model.journal
 
         Viewing pos ->
             entryViewer pos model.journal
@@ -194,8 +194,8 @@ view model =
             notFoundView
 
 
-listView : Journal -> Html Msg
-listView journal =
+listView : Model -> Journal -> Html Msg
+listView model journal =
     let
         entrySummary idx entry =
             li [ class "entry-summary" ]
@@ -206,7 +206,7 @@ listView journal =
         div []
             [ button [ class "button-primary", onClick NewEntry ] [ text "New Entry" ]
             , br [] []
-            , input [ placeholder "Search"] []
+            , input [ placeholder ("Search" ++ model.search)] [] -- found way to access both models
             , ul [ class "journal" ]
                 (Array.indexedMap entrySummary journal
                     |> Array.toList
