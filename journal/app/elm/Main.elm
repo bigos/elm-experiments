@@ -12,10 +12,11 @@ import Html
         , a
         , ul
         , li
+        , br
         , span
         , button
         )
-import Html.Attributes exposing (class, value, href)
+import Html.Attributes exposing (class, value, href, placeholder)
 import Html.Events exposing (onInput, onClick)
 import Markdown
 import Journal exposing (Journal, Entry, updateTitle, updateContent)
@@ -40,6 +41,7 @@ main =
 type alias Model =
     { journal : Journal
     , viewState : ViewState
+    , search : String
     }
 type ViewState
     = Listing
@@ -53,6 +55,7 @@ init : ( Model, Cmd Msg )
 init =
     ( { journal = Journal.empty
       , viewState = Listing
+      , search = ""
       }
     , Ports.loadJournal
     )
@@ -202,6 +205,8 @@ listView journal =
     in
         div []
             [ button [ class "button-primary", onClick NewEntry ] [ text "New Entry" ]
+            , br [] []
+            , input [ placeholder "Search"] []
             , ul [ class "journal" ]
                 (Array.indexedMap entrySummary journal
                     |> Array.toList
