@@ -203,8 +203,11 @@ listView journal =
         div []
             [ button [ class "button-primary", onClick NewEntry ] [ text "New Entry" ]
             , ul [ class "journal" ]
-                (Array.indexedMap entrySummary journal
-                    |> Array.toList
+                (Array.filter (\a ->  (String.contains "t" a.title ||
+                                          String.contains "t" a.date)-- filtering works, now i need cleanup and UI
+                              ) journal
+                |> Array.indexedMap entrySummary
+                |> Array.toList
                 )
             ]
 
