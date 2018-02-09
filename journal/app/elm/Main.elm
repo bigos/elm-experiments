@@ -55,7 +55,7 @@ init : ( Model, Cmd Msg )
 init =
     ( { journal = Journal.empty
       , viewState = Listing
-      , search = "03"
+      , search = ""
       }
     , Ports.loadJournal
     )
@@ -69,6 +69,7 @@ type Msg
     = ShowEntry Int
     | EditEntry Int
     | ListEntries
+    | EditSearch String
     | NewEntry
     | UpdateEntryTitle String
     | UpdateEntryDate String
@@ -86,7 +87,8 @@ update msg model =
 
         ListEntries ->
             ( { model | viewState = Listing }, Cmd.none )
-
+        EditSearch wanted ->
+            ( { model | search = wanted }, Cmd.none )
         EditEntry pos ->
             case Journal.getEntry pos model.journal of
                 Just entry ->
@@ -193,6 +195,10 @@ view model =
         NotFound ->
             notFoundView
 
+entryFilter : Entry -> String -> Bool
+entryFilter entry w  =
+    String.contains w entry.title || String.contains w entry.date
+
 
 listView : Model -> Journal -> Html Msg
 listView model journal =
@@ -206,10 +212,11 @@ listView model journal =
         div []
             [ button [ class "button-primary", onClick NewEntry ] [ text "New Entry" ]
             , br [] []
-            , input [ placeholder ("Search" ++ model.search)] [] -- found way to access both models
+            , input [ placeholder "Search", onInput EditSearch] [] -- found way to access both models
             , ul [ class "journal" ]
-                (Array.indexedMap entrySummary journal
-                    |> Array.toList
+                (Array.filter (\a -> entryFilter a model.search) journal
+                |> Array.indexedMap entrySummary
+                |> Array.toList
                 )
             ]
 
