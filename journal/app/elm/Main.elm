@@ -12,10 +12,11 @@ import Html
         , a
         , ul
         , li
+        , br
         , span
         , button
         )
-import Html.Attributes exposing (class, value, href)
+import Html.Attributes exposing (class, value, href, placeholder)
 import Html.Events exposing (onInput, onClick)
 import Markdown
 import Journal exposing (Journal, Entry, updateTitle, updateContent)
@@ -40,6 +41,7 @@ main =
 type alias Model =
     { journal : Journal
     , viewState : ViewState
+    , search : String
     }
 type ViewState
     = Listing
@@ -53,6 +55,7 @@ init : ( Model, Cmd Msg )
 init =
     ( { journal = Journal.empty
       , viewState = Listing
+      , search = ""
       }
     , Ports.loadJournal
     )
@@ -66,6 +69,7 @@ type Msg
     = ShowEntry Int
     | EditEntry Int
     | ListEntries
+    | EditSearch String
     | NewEntry
     | UpdateEntryTitle String
     | UpdateEntryDate String
@@ -83,7 +87,8 @@ update msg model =
 
         ListEntries ->
             ( { model | viewState = Listing }, Cmd.none )
-
+        EditSearch wanted ->
+            ( { model | search = wanted }, Cmd.none )
         EditEntry pos ->
             case Journal.getEntry pos model.journal of
                 Just entry ->
@@ -176,7 +181,7 @@ view : Model -> Html Msg
 view model =
     case model.viewState of
         Listing ->
-            listView model.journal
+            listView model model.journal
 
         Viewing pos ->
             entryViewer pos model.journal
@@ -190,9 +195,13 @@ view model =
         NotFound ->
             notFoundView
 
+entryFilter : Entry -> String -> Bool
+entryFilter entry w  =
+    String.contains w entry.title || String.contains w entry.date
 
-listView : Journal -> Html Msg
-listView journal =
+
+listView : Model -> Journal -> Html Msg
+listView model journal =
     let
         entrySummary idx entry =
             li [ class "entry-summary" ]
@@ -202,10 +211,10 @@ listView journal =
     in
         div []
             [ button [ class "button-primary", onClick NewEntry ] [ text "New Entry" ]
+            , br [] []
+            , input [ placeholder "Search", onInput EditSearch] [] -- found way to access both models
             , ul [ class "journal" ]
-                (Array.filter (\a ->  (String.contains "t" a.title ||
-                                          String.contains "t" a.date)-- filtering works, now i need cleanup and UI
-                              ) journal
+                (Array.filter (\a -> entryFilter a model.search) journal
                 |> Array.indexedMap entrySummary
                 |> Array.toList
                 )
