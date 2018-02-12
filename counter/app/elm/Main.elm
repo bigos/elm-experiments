@@ -25,13 +25,13 @@ maxCounter = 3
 
 type alias Model =
     { value : Int
-    , counterValues : Array Int
+    , counters : Array Int
     }
 
 initalModel : Model
 initalModel =
     { value = 0
-    , counterValues = Array.repeat (maxCounter + 1) 0
+    , counters = repeat (maxCounter + 1) 0
     }
 
 
@@ -62,15 +62,9 @@ update msg model =
             { model | value = model.value - 5 }
 
         Inc current ->
-            { model | counterValues = (incDecElem
-                                           (+)
-                                           model.counterValues
-                                           current) }
+            { model | counters = (incDecElem (+) model.counters current) }
         Dec current ->
-            { model | counterValues = (incDecElem
-                                           (-)
-                                           model.counterValues
-                                           current) }
+            { model | counters = (incDecElem (-) model.counters current) }
 
 
 incDecElem : (a -> number -> a) -> Array a -> Int -> Array a
@@ -96,10 +90,10 @@ toStr v =
         Just v ->
             toString v
 
-viewCounters : { b | counterValues : Array a } -> Int -> Html Msg
+viewCounters : { b | counters : Array a } -> Int -> Html Msg
 viewCounters model current =
     div[] [ button [ onClick (Inc current)] [text "+1"]
-        , span   [] [text (toStr (get current model.counterValues))]
+        , span   [] [text (toStr (get current model.counters))]
           , button [ onClick (Dec current)] [text "-1"]
         ]
 
