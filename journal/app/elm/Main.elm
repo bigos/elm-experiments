@@ -22,6 +22,8 @@ import Markdown
 import Journal exposing (Journal, Entry, updateTitle, updateContent)
 import Array exposing (Array)
 import Ports
+import Date exposing (..)
+import Task exposing (..)
 
 
 main : Program Never Model Msg
@@ -42,6 +44,7 @@ type alias Model =
     { journal : Journal
     , viewState : ViewState
     , search : String
+    , currentDate : Maybe Date
     }
 type ViewState
     = Listing
@@ -56,6 +59,7 @@ init =
     ( { journal = Journal.empty
       , viewState = Listing
       , search = ""
+      , currentDate = Nothing
       }
     , Ports.loadJournal
     )
@@ -77,6 +81,8 @@ type Msg
     | SaveEntry
     | JournalUpdated Journal
     | UnknownData String
+    | RequestDate
+    | ReceiveDate Date
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -150,6 +156,13 @@ update msg model =
                 , Cmd.none
                 )
 
+        RequestDate ->
+            ( model, Task.perform ReceiveDate Date.now )
+        ReceiveDate date ->
+            let
+                nextModel = { model | currentDate = Just date }
+            in
+                ( nextModel, Cmd.none )
         -- unrecognized message from js
         UnknownData description ->
             ( model, Cmd.none )
