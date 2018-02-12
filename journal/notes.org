@@ -1,0 +1,14 @@
+* Journal
+
+A training application for a beginner Elm coder.
+
+** Remaining tasks
+
+*** TODO Add URL navigation so the back/forward buttons work sensibly
+
+**** module
+http://package.elm-lang.org/packages/elm-lang/navigation/latest
+
+*** TODO validations
+
+*** TODO better structure
