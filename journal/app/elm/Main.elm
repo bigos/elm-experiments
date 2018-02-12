@@ -24,7 +24,7 @@ import Array exposing (Array)
 import Ports
 import Navigation
 
--- main : Program Flags Model Msg
+main : Program Flags Model Msg
 main =
     Navigation.programWithFlags UrlChange
         { init = init
@@ -40,7 +40,7 @@ type alias Flags =
 -- Model
 
 type alias Model =
-    { history : List Navigation.Location
+    { history : Navigation.Location
     , journal : Journal
     , viewState : ViewState
     , search : String
@@ -55,13 +55,13 @@ type ViewState
     | NotFound
 
 
--- init : Flags -> ( Model, Cmd Msg )
+init : Flags -> Navigation.Location -> ( Model, Cmd Msg )
 init flags location =
     ( { journal = Journal.empty
       , viewState = Listing
       , search = ""
       , currentDate = flags.date
-      , currentRoute = location
+      , history = location
       }
     , Ports.loadJournal
     )
@@ -85,6 +85,8 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        UrlChange loc ->
+            ( { model | viewState = Listing }, Cmd.none )
         ShowEntry pos ->
             ( { model | viewState = Viewing pos }, Cmd.none )
 
