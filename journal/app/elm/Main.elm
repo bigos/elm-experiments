@@ -40,7 +40,8 @@ type alias Flags =
 -- Model
 
 type alias Model =
-    { history : Navigation.Location
+    { location : Navigation.Location
+    , locationHistory : List Navigation.Location
     , journal : Journal
     , viewState : ViewState
     , search : String
@@ -61,7 +62,8 @@ init flags location =
       , viewState = Listing
       , search = ""
       , currentDate = flags.date
-      , history = location
+      , location = location
+      , locationHistory = [location]
       }
     , Ports.loadJournal
     )
@@ -84,8 +86,11 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    --{ model | locationHistory = model.location :: model.locationHistory } >>
+    --Debug.log ((toString model)++ "!!!!!!!!!!!!!")
     case msg of
         UrlChange loc ->
+            Debug.log ((toString loc) ++ "====")
             ( { model | viewState = Listing }, Cmd.none )
         ShowEntry pos ->
             ( { model | viewState = Viewing pos }, Cmd.none )
