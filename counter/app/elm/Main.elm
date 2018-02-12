@@ -84,6 +84,10 @@ incDecElem fn vs c =
             Just v ->
                 set c (fn v 1) vs
 
+
+-- View
+
+
 toStr : Maybe a -> String
 toStr v =
     case v of
@@ -91,8 +95,6 @@ toStr v =
             ""
         Just v ->
             toString v
-
--- View
 
 viewCounters : { b | counterValues : Array a } -> Int -> Html Msg
 viewCounters model current =
