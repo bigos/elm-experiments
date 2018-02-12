@@ -22,30 +22,30 @@ import Markdown
 import Journal exposing (Journal, Entry, updateTitle, updateContent)
 import Array exposing (Array)
 import Ports
-import Date exposing (..)
-import Task exposing (..)
 
 
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-    Html.program
+    Html.programWithFlags
         { init = init
         , update = update
         , view = view
         , subscriptions = subscriptions
         }
 
-
+type alias Flags =
+    { date : String
+    }
 
 -- Model
-
 
 type alias Model =
     { journal : Journal
     , viewState : ViewState
     , search : String
-    , currentDate : Maybe Date
+    , currentDate : String
     }
+
 type ViewState
     = Listing
     | Viewing Int
@@ -54,19 +54,15 @@ type ViewState
     | NotFound
 
 
-init : ( Model, Cmd Msg )
-init =
+init : Flags -> ( Model, Cmd Msg )
+init  flags =
     ( { journal = Journal.empty
       , viewState = Listing
       , search = ""
-      , currentDate = Nothing
+      , currentDate = flags.date
       }
     , Ports.loadJournal
     )
-
-
-
--- Update
 
 
 type Msg
@@ -81,8 +77,6 @@ type Msg
     | SaveEntry
     | JournalUpdated Journal
     | UnknownData String
-    | RequestDate
-    | ReceiveDate Date
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -104,7 +98,7 @@ update msg model =
                     ( { model | viewState = NotFound }, Cmd.none )
 
         NewEntry ->
-            ( { model | viewState = Creating (Entry "" "" "") }, Cmd.none )
+            ( { model | viewState = Creating (Entry "" model.currentDate "") }, Cmd.none )
 
         SaveEntry ->
             case model.viewState of
@@ -156,13 +150,6 @@ update msg model =
                 , Cmd.none
                 )
 
-        RequestDate ->
-            ( model, Task.perform ReceiveDate Date.now )
-        ReceiveDate date ->
-            let
-                nextModel = { model | currentDate = Just date }
-            in
-                ( nextModel, Cmd.none )
         -- unrecognized message from js
         UnknownData description ->
             ( model, Cmd.none )
