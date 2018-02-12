@@ -9,6 +9,13 @@ A training application for a beginner Elm coder.
 **** module
 http://package.elm-lang.org/packages/elm-lang/navigation/latest
 
+***** installation
+ To install the module run the following in the terminal.
+#+BEGIN_EXAMPLE
+elm package install elm-lang/navigation
+#+END_EXAMPLE
+It will add the package to `elm-package.json` automatically.
+
 *** TODO validations
 
 *** TODO better structure

@@ -22,14 +22,14 @@ import Markdown
 import Journal exposing (Journal, Entry, updateTitle, updateContent)
 import Array exposing (Array)
 import Ports
+import Navigation
 
-
-main : Program Flags Model Msg
+-- main : Program Flags Model Msg
 main =
-    Html.programWithFlags
+    Navigation.programWithFlags UrlChange
         { init = init
-        , update = update
         , view = view
+        , update = update
         , subscriptions = subscriptions
         }
 
@@ -40,7 +40,8 @@ type alias Flags =
 -- Model
 
 type alias Model =
-    { journal : Journal
+    { history : List Navigation.Location
+    , journal : Journal
     , viewState : ViewState
     , search : String
     , currentDate : String
@@ -54,12 +55,13 @@ type ViewState
     | NotFound
 
 
-init : Flags -> ( Model, Cmd Msg )
-init  flags =
+-- init : Flags -> ( Model, Cmd Msg )
+init flags location =
     ( { journal = Journal.empty
       , viewState = Listing
       , search = ""
       , currentDate = flags.date
+      , currentRoute = location
       }
     , Ports.loadJournal
     )
@@ -77,6 +79,7 @@ type Msg
     | SaveEntry
     | JournalUpdated Journal
     | UnknownData String
+    | UrlChange Navigation.Location
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

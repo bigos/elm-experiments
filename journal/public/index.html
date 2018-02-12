@@ -10,14 +10,12 @@
 <body>
   <script src="js/app.js"></script>
   <script>
-   // Start Elm app in fullscreen mode
-   let elm = require('elm/Main.elm');
-   let app = elm.Main.fullscreen({
-     date : new Date().toLocaleDateString()
-   });
+    // Start Elm app in fullscreen mode
+    let elm = require('elm/Main.elm');
+    let app = elm.Main.fullscreen();
 
-   //Vanilla JS works too!
-   require('js/localstorage.js').setup(app.ports);
+    //Vanilla JS works too!
+    require('js/localstorage.js').setup(app.ports);
   </script>
 </body>
 
