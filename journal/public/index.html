@@ -12,7 +12,9 @@
   <script>
     // Start Elm app in fullscreen mode
     let elm = require('elm/Main.elm');
-    let app = elm.Main.fullscreen();
+    let app = elm.Main.fullscreen({
+      date: new Date().toLocaleDateString()
+    });
 
     //Vanilla JS works too!
     require('js/localstorage.js').setup(app.ports);
