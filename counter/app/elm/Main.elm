@@ -4,8 +4,8 @@ import Html exposing (Html, text, div, button, hr, span)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 
-import Array exposing (..)
-import List exposing (..)
+import Array exposing (Array, repeat, get, set)
+import List exposing (map, range)
 
 main : Program Never Model Msg
 main =
@@ -62,13 +62,19 @@ update msg model =
             { model | value = model.value - 5 }
 
         Inc current ->
-            { model | counterValues = (incElem model.counterValues current) }
+            { model | counterValues = (incDecElem
+                                           (+)
+                                           model.counterValues
+                                           current) }
         Dec current ->
-            { model | counterValues = (decElem model.counterValues current) }
+            { model | counterValues = (incDecElem
+                                           (-)
+                                           model.counterValues
+                                           current) }
 
--- code duplication, how do i use higher order functions in Elm
-incElem : Array Int -> Int -> Array Int
-incElem vs c =
+
+incDecElem : (a -> number -> a) -> Array a -> Int -> Array a
+incDecElem fn vs c =
     let
         v = get c vs
     in
@@ -76,19 +82,9 @@ incElem vs c =
             Nothing ->
                 vs
             Just v ->
-                set c (v+1) vs
+                set c (fn v 1) vs
 
-
-decElem vs c =
-    let
-        v = get c vs
-    in
-        case v of
-            Nothing ->
-                vs
-            Just v ->
-                set c (v-1) vs
-
+toStr : Maybe a -> String
 toStr v =
     case v of
         Nothing ->
@@ -98,8 +94,8 @@ toStr v =
 
 -- View
 
-
-viewCounter model current =
+viewCounters : { b | counterValues : Array a } -> Int -> Html Msg
+viewCounters model current =
     div[] [ button [ onClick (Inc current)] [text "+1"]
         , span   [] [text (toStr (get current model.counterValues))]
           , button [ onClick (Dec current)] [text "-1"]
@@ -118,5 +114,5 @@ view model =
             ]
 
         , hr [] []
-        , div [] (List.map (\x -> viewCounter model x ) (range 1 maxCounter)  )
+        , div [] (List.map (\x -> viewCounters model x ) (range 1 maxCounter)  )
         ]
