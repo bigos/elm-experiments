@@ -1,4 +1,4 @@
-Taken from (elm-starter-projects)[https://github.com/Triangle-Elm/elm-starter-projects]
+Taken from [elm-starter-projects](https://github.com/Triangle-Elm/elm-starter-projects)
 
 # Elm Starter Projects
 
