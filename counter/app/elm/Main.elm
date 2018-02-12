@@ -20,26 +20,18 @@ main =
 -- Model
 
 
+maxCounter : Int
+maxCounter = 3
+
 type alias Model =
     { value : Int
-    , counterIndexes : List Int
     , counterValues : Array Int
-    , currentCounter : Int
     }
-
--- maximum of counters starting from 0
-maxCounter : Int
-maxCounter = 2
-
-counters : Array Int
-counters = Array.repeat (maxCounter + 1) 0
 
 initalModel : Model
 initalModel =
     { value = 0
-    , counterIndexes = List.range 0 maxCounter
-    , counterValues = counters
-    , currentCounter = 0
+    , counterValues = Array.repeat (maxCounter + 1) 0
     }
 
 
@@ -52,8 +44,8 @@ type Msg
     | Decrement
     | Increment5
     | Decrement5
-    | Inc
-    | Dec
+    | Inc Int
+    | Dec Int
 
 
 update : Msg -> Model -> Model
@@ -69,27 +61,48 @@ update msg model =
         Decrement5 ->
             { model | value = model.value - 5 }
 
-        Inc ->
-            { model | counterValues = (incElem model.counterValues model.currentCounter) }
-        Dec ->
-            { model | counterValues = (decElem model.counterValues model.currentCounter) }
+        Inc current ->
+            { model | counterValues = (incElem model.counterValues current) }
+        Dec current ->
+            { model | counterValues = (decElem model.counterValues current) }
 
-
--- TODO: finish those two functions
+-- code duplication, how do i use higher order functions in Elm
+incElem : Array Int -> Int -> Array Int
 incElem vs c =
-    get c vs |> (\v -> set c (v+1) vs)
+    let
+        v = get c vs
+    in
+        case v of
+            Nothing ->
+                vs
+            Just v ->
+                set c (v+1) vs
 
 
 decElem vs c =
-    vs
+    let
+        v = get c vs
+    in
+        case v of
+            Nothing ->
+                vs
+            Just v ->
+                set c (v-1) vs
+
+toStr v =
+    case v of
+        Nothing ->
+            ""
+        Just v ->
+            toString v
 
 -- View
 
 
 viewCounter model current =
-  div[] [ button [ onClick Inc] [text "+1"]
-        , span   [] [text (toString (get current model.counterValues))]
-        , button [ onClick Dec] [text "-1"]
+    div[] [ button [ onClick (Inc current)] [text "+1"]
+        , span   [] [text (toStr (get current model.counterValues))]
+          , button [ onClick (Dec current)] [text "-1"]
         ]
 
 view : Model -> Html Msg
@@ -105,5 +118,5 @@ view model =
             ]
 
         , hr [] []
-        , div [] (List.map (\x -> viewCounter model x ) model.counterIndexes  )
+        , div [] (List.map (\x -> viewCounter model x ) (range 1 maxCounter)  )
         ]
