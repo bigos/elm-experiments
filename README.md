@@ -1,3 +1,5 @@
+Taken from (elm-starter-projects)[https://github.com/Triangle-Elm/elm-starter-projects]
+
 # Elm Starter Projects
 
 This is a small collection of basic apps written in Elm. They're intended to be
